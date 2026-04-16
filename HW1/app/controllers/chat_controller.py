@@ -50,3 +50,27 @@ async def delete_chat_endpoint(
 ):
     await delete_chat(db, chat_id, current_user.id)
     return {"message": "Chat deleted"}
+
+@router.get("/{chat_id}/ask")
+async def ask_llm_in_chat(
+    chat_id: UUID,
+    question: str,
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    # убедимся, что у пользователя есть доступ к чату (как в get_chat)
+    await get_chat(db, chat_id, current_user.id)
+
+    llm = request.app.state.llm
+
+    response = llm.create_chat_completion(
+        messages=[
+            {"role": "user", "content": question}
+        ],
+        max_tokens=256,
+        temperature=0.7,
+    )
+
+    answer = response["choices"][0]["message"]["content"]
+    return {"question": question, "answer": answer}
