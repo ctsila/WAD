@@ -16,12 +16,17 @@ down_revision: str | None = None
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
 
-
-message_role = sa.Enum("user", "assistant", name="message_role")
+# Используем уже существующий enum type message_role в базе
+message_role = postgresql.ENUM(
+    "user",
+    "assistant",
+    name="message_role",
+    create_type=False,  # НЕ создаём тип заново
+)
 
 
 def upgrade() -> None:
-    message_role.create(op.get_bind(), checkfirst=True)
+    # Не создаём message_role.create(...), тип уже существует
 
     op.create_table(
         "users",
@@ -74,4 +79,4 @@ def downgrade() -> None:
     op.drop_index(op.f("ix_users_github_id"), table_name="users")
     op.drop_index(op.f("ix_users_email"), table_name="users")
     op.drop_table("users")
-    message_role.drop(op.get_bind(), checkfirst=True)
+   
