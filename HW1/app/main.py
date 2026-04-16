@@ -13,9 +13,9 @@ from huggingface_hub import hf_hub_download
 import os
 import shutil
 
-
+# здесь можно прописать любую модель/файл, не только пример с Qwen
 HF_REPO_ID = "Jackrong/Qwen3.5-4B-Claude-4.6-Opus-Reasoning-Distilled-GGUF"
-HF_FILENAME = "Qwen3.5-4B.Q2_K.gguf"
+HF_FILENAME = "Qwen3.5-4B.Q2_K.gguf"  # точное имя .gguf из вкладки Files на HF
 
 
 def create_app() -> FastAPI:
@@ -31,29 +31,39 @@ def create_app() -> FastAPI:
 
     @app.on_event("startup")
     async def load_llm():
+        """
+        1) если model.gguf нет — скачиваем нужный .gguf из HF
+        2) кладём его в корень HW1 как model.gguf
+        3) загружаем Llama и сохраняем в app.state.llm
+        """
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         target_model_path = os.path.join(base_dir, "model.gguf")
 
+        # шаг 1: скачивание и "переименование"
         if not os.path.exists(target_model_path):
             print("model.gguf not found, downloading from Hugging Face...")
+
             downloaded_path = hf_hub_download(
                 repo_id=HF_REPO_ID,
                 filename=HF_FILENAME,
-                local_dir=base_dir,
-                local_dir_use_symlinks=False,
+                local_dir=base_dir,          # скачиваем именно в HW1
+                local_dir_use_symlinks=False
             )
 
+            # если файл скачался под другим именем — копируем как model.gguf
             if downloaded_path != target_model_path:
                 shutil.copyfile(downloaded_path, target_model_path)
 
             print(f"Model saved to: {target_model_path}")
 
+        # шаг 2: загрузка модели один раз
         if not hasattr(app.state, "llm"):
-            print("Loading GGUF model...")
+            print("Loading GGUF model into llama_cpp...")
             app.state.llm = Llama(
                 model_path=target_model_path,
                 n_ctx=4096,
                 n_threads=4,
+                # при необходимости настроишь chat_format и прочие параметры под конкретную модель
             )
             print("Model loaded")
 
