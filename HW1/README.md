@@ -11,7 +11,7 @@ This project uses a React SPA frontend with a FastAPI backend following MCS (Mod
 2. `docker compose up -d`
 3. `pip install -r requirements.txt`
 4. `alembic upgrade head`
-5. Place `model.gguf` in project root.
+5. Q4_K_M.gguf as `model.gguf` chosen.
 6. `uvicorn app.main:app --reload`
 7. `cd frontend && npm install && npm run dev`
 ## GitHub OAuth App Settings
