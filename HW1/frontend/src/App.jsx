@@ -89,12 +89,14 @@ function AuthPage({ theme, toggleTheme }) {
         </div>
         <form onSubmit={onSubmit} className="form">
           {tab === 'signin' ? (
-            <input
-              placeholder="Username or email"
-              value={identifier}
-              onChange={(e) => setIdentifier(e.target.value)}
-              required
-            />
+            <div className="field-wrap">
+              <input
+                placeholder="Username or email"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
+                required
+              />
+            </div>
           ) : (
             <div className="field-wrap" onMouseEnter={() => setHoveredField('username')} onMouseLeave={() => setHoveredField(null)}>
               <input
