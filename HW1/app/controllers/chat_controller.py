@@ -63,7 +63,6 @@ async def rename_chat_endpoint(
     chat = await rename_chat(db, chat_id, current_user.id, payload.title)
     return chat
 
-
 @router.get("/{chat_id}/ask")
 async def ask_llm_in_chat(
     chat_id: UUID,
@@ -71,19 +70,21 @@ async def ask_llm_in_chat(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    # Ensure user has access to the chat.
+    # убедимся, что у пользователя есть доступ к чату (как в get_chat)
     await get_chat(db, chat_id, current_user.id)
 
     try:
         llm = get_llm()
-    except Exception as exc:
-        raise HTTPException(status_code=503, detail=f"LLM is unavailable: {exc}") from exc
+        response = llm.create_chat_completion(
+            messages=[
+                {"role": "user", "content": question}
+            ],
+            max_tokens=256,
+            temperature=0.7,
+        )
+        answer = response["choices"][0]["message"]["content"]
+    except Exception:
+        # Model not available, return a stub response
+        answer = "I'm sorry, the LLM model is not currently available. Please try again later or ensure the model file is present."
 
-    response = llm.create_chat_completion(
-        messages=[{"role": "user", "content": question}],
-        max_tokens=256,
-        temperature=0.7,
-    )
-
-    answer = response["choices"][0]["message"]["content"]
     return {"question": question, "answer": answer}

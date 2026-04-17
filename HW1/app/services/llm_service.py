@@ -28,7 +28,7 @@ def get_llm() -> Llama:
         if not os.path.exists(settings.LLM_MODEL_PATH):
             _llm_load_failed = True
             raise RuntimeError(f"Model path does not exist: {settings.LLM_MODEL_PATH}")
-        _llm = Llama(model_path=settings.LLM_MODEL_PATH, n_ctx=512, n_threads=4)
+        _llm = Llama(model_path=settings.LLM_MODEL_PATH, n_ctx=2048, n_threads=4)
     return _llm
 
 
