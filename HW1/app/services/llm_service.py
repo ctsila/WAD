@@ -23,8 +23,11 @@ def get_llm() -> Llama:
 def generate_response(prompt: str) -> str:
     try:
         llm = get_llm()
-        result = llm(prompt, max_tokens=200, stream=False)
-        return result["choices"][0]["text"]
+        result = llm(prompt, max_tokens=220, stream=False, stop=["\nUser:", "\nSystem:", "\nAssistant:"])
+        text = result["choices"][0]["text"].strip()
+        if text.startswith("Assistant:"):
+            text = text[len("Assistant:") :].strip()
+        return text
     except RuntimeError:
         # Model not available, return a stub response
         return "I'm sorry, the LLM model is not currently available. Please try again later or ensure the model file is present."
@@ -33,7 +36,7 @@ def generate_response(prompt: str) -> str:
 async def stream_response(prompt: str):
     try:
         llm = get_llm()
-        stream = llm(prompt, max_tokens=200, stream=True)
+        stream = llm(prompt, max_tokens=220, stream=True, stop=["\nUser:", "\nSystem:", "\nAssistant:"])
         for chunk in stream:
             token = chunk["choices"][0]["text"]
             if token:

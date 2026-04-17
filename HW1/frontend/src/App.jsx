@@ -173,9 +173,15 @@ function ChatPage({ theme, toggleTheme }) {
   useEffect(() => {
     if (!accessToken) return
     getChats(accessToken)
-      .then((data) => {
+      .then(async (data) => {
+        if (data.length === 0) {
+          const chat = await createChat(accessToken)
+          setChats([chat])
+          setActiveChatId(chat.id)
+          return
+        }
         setChats(data)
-        if (data[0]) setActiveChatId(data[0].id)
+        setActiveChatId(data[0].id)
       })
       .catch((err) => setError(err.message))
   }, [accessToken])

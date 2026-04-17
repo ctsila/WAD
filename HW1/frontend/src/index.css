@@ -37,6 +37,13 @@
   box-sizing: border-box;
 }
 
+html,
+body,
+#root {
+  height: 100%;
+  overflow: hidden;
+}
+
 body {
   margin: 0;
   color: var(--text);
@@ -229,6 +236,8 @@ button.danger {
 .layout {
   display: grid;
   grid-template-columns: 320px 1fr;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .sidebar {
@@ -239,6 +248,7 @@ button.danger {
   display: flex;
   flex-direction: column;
   gap: 0.65rem;
+  overflow: hidden;
 }
 
 .sidebar-head {
@@ -266,6 +276,7 @@ button.danger {
   flex-direction: column;
   gap: 0.52rem;
   margin-top: 0.35rem;
+  overflow-y: auto;
 }
 
 .chat-item {
@@ -308,6 +319,7 @@ button.danger {
   flex-direction: column;
   gap: 0.85rem;
   padding: 1rem;
+  min-height: 0;
 }
 
 .main-head {
@@ -334,7 +346,7 @@ button.danger {
 
 .messages {
   flex: 1;
-  min-height: 58vh;
+  min-height: 0;
   overflow-y: auto;
   border: 1px solid var(--line);
   border-radius: 14px;
