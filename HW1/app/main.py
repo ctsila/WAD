@@ -13,9 +13,9 @@ from huggingface_hub import hf_hub_download
 import os
 import shutil
 
-# здесь можно прописать любую модель/файл, не только пример с Qwen
-HF_REPO_ID = "Jackrong/Qwen3.5-4B-Claude-4.6-Opus-Reasoning-Distilled-GGUF"
-HF_FILENAME = "Qwen3.5-4B.Q2_K.gguf"  # точное имя .gguf из вкладки Files на HF
+# здесь можно прописать любую модель/файл из Hugging Face GGUF
+HF_REPO_ID = "mradermacher/Gemma-4-Queen-31B-it-GGUF"
+HF_FILENAME = "Gemma-4-Queen-31B-it.Q4_K_S.gguf"  # точное имя .gguf из вкладки Files на HF
 
 
 def create_app() -> FastAPI:
