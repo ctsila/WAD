@@ -11,9 +11,8 @@ This project uses a React SPA frontend with a FastAPI backend following MCS (Mod
 2. `docker compose up -d`
 3. `pip install -r requirements.txt`
 4. `alembic upgrade head`
-5. `Q4_K_M.gguf` as `model.gguf` chosen. Dwnload it here: https://hf.tst.eu/model#Gemma-4-Queen-31B-it-i1-GGUF
-6. `uvicorn app.main:app --reload`
-7. `cd frontend && npm install && npm run dev`
+5. `uvicorn app.main:app --reload`
+6. `cd frontend && npm install && npm run dev`
 ## GitHub OAuth App Settings
 Authorization callback URL: `http://localhost:8000/auth/github/callback`
 ## API Routes
