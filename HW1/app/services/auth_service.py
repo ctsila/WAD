@@ -5,8 +5,10 @@ from uuid import UUID
 import httpx
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from sqlalchemy import select
+from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from fastapi import HTTPException, status
 
 from app.config import settings
 from app.models.user import User
@@ -23,8 +25,19 @@ def _create_jwt_token(data: dict, expires_delta: timedelta) -> str:
 
 
 async def register_user(db: AsyncSession, username: str, email: str, password: str) -> User:
+    normalized_username = username.strip()
+    normalized_email = email.strip().lower()
+
+    existing_by_username = await db.execute(select(User).where(User.username == normalized_username))
+    if existing_by_username.scalar_one_or_none():
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Username is already taken")
+
+    existing_by_email = await db.execute(select(User).where(func.lower(User.email) == normalized_email))
+    if existing_by_email.scalar_one_or_none():
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email is already registered")
+
     hashed_password = pwd_context.hash(password)
-    user = User(username=username, email=email, hashed_password=hashed_password)
+    user = User(username=normalized_username, email=normalized_email, hashed_password=hashed_password)
     db.add(user)
     await db.commit()
     await db.refresh(user)
@@ -32,7 +45,15 @@ async def register_user(db: AsyncSession, username: str, email: str, password: s
 
 
 async def authenticate_user(db: AsyncSession, username: str, password: str) -> User | None:
-    result = await db.execute(select(User).where(User.username == username))
+    identifier = username.strip()
+    result = await db.execute(
+        select(User).where(
+            or_(
+                User.username == identifier,
+                func.lower(User.email) == identifier.lower(),
+            )
+        )
+    )
     user = result.scalar_one_or_none()
     if not user or not user.hashed_password:
         return None

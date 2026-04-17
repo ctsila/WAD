@@ -1,14 +1,36 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+function getDefaultApiBaseUrl() {
+  if (typeof window === 'undefined') return 'http://localhost:8000'
+  const { protocol, hostname } = window.location
+
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return `${protocol}//${hostname}:8000`
+  }
+
+  // Support hosts like "...-5173.app.github.dev" by swapping forwarded port in hostname.
+  if (/-(\d+)\./.test(hostname)) {
+    return `${protocol}//${hostname.replace(/-\d+\./, '-8000.')}`
+  }
+
+  return `${protocol}//${hostname}:8000`
+}
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || getDefaultApiBaseUrl()
 
 async function request(path, options = {}) {
-  const res = await fetch(`${API_BASE_URL}${path}`, {
-    headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
-    ...options,
-  })
+  let res
+  try {
+    res = await fetch(`${API_BASE_URL}${path}`, {
+      headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+      ...options,
+    })
+  } catch {
+    throw new Error(`Cannot reach API at ${API_BASE_URL}. Check backend URL or CORS settings.`)
+  }
   if (!res.ok) {
     const data = await res.json().catch(() => ({}))
     throw new Error(data.detail || 'Request failed')
   }
+  if (res.status === 204) return null
   return res.json()
 }
 
@@ -26,6 +48,12 @@ export const logout = (refresh_token, accessToken) =>
     method: 'POST',
     headers: { Authorization: `Bearer ${accessToken}` },
     body: JSON.stringify({ refresh_token }),
+  })
+
+export const getMe = (accessToken) =>
+  request('/auth/me', {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${accessToken}` },
   })
 
 export const githubLogin = () => {

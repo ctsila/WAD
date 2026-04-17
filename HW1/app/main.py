@@ -14,10 +14,13 @@ from app.services.llm_service import get_llm
 def create_app() -> FastAPI:
     app = FastAPI(title="LLM Chat App")
 
+    raw_origins = settings.CORS_ALLOW_ORIGINS.strip()
+    allow_origins = ["*"] if raw_origins == "*" else [origin.strip() for origin in raw_origins.split(",") if origin.strip()]
+
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["http://localhost:5173"],
-        allow_credentials=True,
+        allow_origins=allow_origins,
+        allow_credentials=False,
         allow_methods=["*"],
         allow_headers=["*"],
     )

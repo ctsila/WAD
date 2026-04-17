@@ -32,3 +32,11 @@ async def delete_chat(db: AsyncSession, chat_id: UUID, user_id: UUID) -> None:
     chat = await get_chat(db, chat_id, user_id)
     await db.delete(chat)
     await db.commit()
+
+
+async def rename_chat(db: AsyncSession, chat_id: UUID, user_id: UUID, title: str) -> Chat:
+    chat = await get_chat(db, chat_id, user_id)
+    chat.title = title
+    await db.commit()
+    await db.refresh(chat)
+    return chat
