@@ -16,8 +16,9 @@ down_revision: str | None = None
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
 
-# Определяем enum для ролей сообщения
-message_role = sa.Enum("user", "assistant", name="message_role")
+# Определяем enum для ролей сообщения.
+# create_type=False предотвращает повторный CREATE TYPE во время op.create_table.
+message_role = postgresql.ENUM("user", "assistant", name="message_role", create_type=False)
 
 
 def upgrade() -> None:
