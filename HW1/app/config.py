@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     GITHUB_CLIENT_SECRET: str
     GITHUB_REDIRECT_URI: str
     LLM_MODEL_PATH: str = "model.gguf"
+    PRELOAD_LLM_ON_STARTUP: bool = False
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 

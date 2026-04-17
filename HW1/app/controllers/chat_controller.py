@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
@@ -8,6 +8,7 @@ from app.dependencies import get_current_user
 from app.models.user import User
 from app.schemas.chat import ChatCreateRequest, ChatResponse
 from app.services.chat_service import create_chat, delete_chat, get_chat, get_user_chats
+from app.services.llm_service import get_llm
 from app.services.message_service import get_chat_messages
 
 router = APIRouter(prefix="/chats", tags=["chats"])
@@ -51,23 +52,24 @@ async def delete_chat_endpoint(
     await delete_chat(db, chat_id, current_user.id)
     return {"message": "Chat deleted"}
 
+
 @router.get("/{chat_id}/ask")
 async def ask_llm_in_chat(
     chat_id: UUID,
     question: str,
-    request: Request,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    # убедимся, что у пользователя есть доступ к чату (как в get_chat)
+    # Ensure user has access to the chat.
     await get_chat(db, chat_id, current_user.id)
 
-    llm = request.app.state.llm
+    try:
+        llm = get_llm()
+    except Exception as exc:
+        raise HTTPException(status_code=503, detail=f"LLM is unavailable: {exc}") from exc
 
     response = llm.create_chat_completion(
-        messages=[
-            {"role": "user", "content": question}
-        ],
+        messages=[{"role": "user", "content": question}],
         max_tokens=256,
         temperature=0.7,
     )
