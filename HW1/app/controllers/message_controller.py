@@ -38,17 +38,9 @@ async def ask_question(
     prompt = f"User: {payload.question}\nAssistant:"
 
     if not payload.stream:
-        try:
-            answer = generate_response(prompt)
-        except Exception as exc:
-            raise HTTPException(status_code=503, detail=f"LLM is unavailable: {exc}") from exc
+        answer = generate_response(prompt)
         await add_message(db, chat_id, "assistant", answer)
         return AskResponse(answer=answer)
-
-    try:
-        get_llm()
-    except Exception as exc:
-        raise HTTPException(status_code=503, detail=f"LLM is unavailable: {exc}") from exc
 
     async def event_generator() -> AsyncGenerator[str, None]:
         full_answer: list[str] = []
