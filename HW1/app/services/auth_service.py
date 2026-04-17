@@ -14,7 +14,7 @@ from app.config import settings
 from app.models.user import User
 from app.redis_client import get_redis
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=["pbkdf2_sha256", "bcrypt"], deprecated="auto")
 
 
 def _create_jwt_token(data: dict, expires_delta: timedelta) -> str:
