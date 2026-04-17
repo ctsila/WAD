@@ -152,6 +152,7 @@ textarea:focus {
 
 .field-wrap {
   position: relative;
+  width: 100%;
 }
 
 .field-hint {

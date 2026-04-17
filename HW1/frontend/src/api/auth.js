@@ -6,9 +6,9 @@ function getDefaultApiBaseUrl() {
     return `${protocol}//${hostname}:8000`
   }
 
-  // Support hosts like "...-5173.app.github.dev" by swapping forwarded port in hostname.
-  if (/-(\d+)\./.test(hostname)) {
-    return `${protocol}//${hostname.replace(/-\d+\./, '-8000.')}`
+  // Support GitHub Codespaces: replace frontend port (e.g., -5173.) with backend port (-8000.)
+  if (hostname.includes('app.github.dev')) {
+    return `${protocol}//${hostname.replace(/-\d+\.app\.github\.dev/, '-8000.app.github.dev')}`
   }
 
   return `${protocol}//${hostname}:8000`
