@@ -134,7 +134,13 @@ button:disabled {
   gap: 0.68rem;
 }
 
-input,
+.form > input,
+.form > .field-wrap,
+.form > button {
+  width: 100%;
+}
+
+.field-wrap > input,
 textarea {
   border: 1px solid var(--line);
   border-radius: 10px;

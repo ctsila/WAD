@@ -1,17 +1,5 @@
 function getDefaultApiBaseUrl() {
-  if (typeof window === 'undefined') return 'http://localhost:8000'
-  const { protocol, hostname } = window.location
-
-  if (hostname === 'localhost' || hostname === '127.0.0.1') {
-    return `${protocol}//${hostname}:8000`
-  }
-
-  // Support GitHub Codespaces: replace frontend port (e.g., -5173.) with backend port (-8000.)
-  if (hostname.includes('app.github.dev')) {
-    return `${protocol}//${hostname.replace(/-\d+\.app\.github\.dev/, '-8000.app.github.dev')}`
-  }
-
-  return `${protocol}//${hostname}:8000`
+  return '/api'
 }
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || getDefaultApiBaseUrl()
