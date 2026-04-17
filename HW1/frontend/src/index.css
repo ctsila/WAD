@@ -141,7 +141,10 @@ button:disabled {
 }
 
 .field-wrap > input,
+.field-wrap > textarea,
 textarea {
+  display: block;
+  width: 100%;
   border: 1px solid var(--line);
   border-radius: 10px;
   padding: 0.72rem 0.82rem;
