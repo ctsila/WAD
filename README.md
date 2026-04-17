@@ -21,10 +21,9 @@ HW1 is an **LLM Chat Application** with:
    - `pip install -r requirements.txt`
 5. Apply database migrations:
    - `alembic upgrade head`
-6. Download `.gguf` file (https://hf.tst.eu/model#Gemma-4-Queen-31B-it-i1-GGUF) and locate it to the "HW1" folder.
-7. Start backend server:
+6. Start backend server:
    - `uvicorn app.main:app --reload`
-8. In another terminal (also from the `HW1` directory), start frontend:
+7. In another terminal (also from the `HW1` directory), start frontend:
    - `cd frontend`
    - `npm install`
    - `npm run dev`
